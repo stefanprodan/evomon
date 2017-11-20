@@ -14,11 +14,6 @@ services:
       - "LOGSPOUT=ignore"
     volumes:
       - /usr/share/elasticsearch/data
-    pid: "host"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     networks:
       - host-net
     expose:
@@ -52,11 +47,6 @@ services:
       - "LOGSPOUT=ignore"
     volumes:
       - /usr/share/elasticsearch/data
-    pid: "host"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     networks:
       - host-net
     deploy:
@@ -87,11 +77,6 @@ services:
       - "LOGSPOUT=ignore"
     volumes:
       - /usr/share/elasticsearch/data
-    pid: "host"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     networks:
       - host-net
     deploy:
@@ -125,11 +110,6 @@ services:
       - "LOGSPOUT=ignore"
     volumes:
       - /usr/share/elasticsearch/data
-    pid: "host"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     networks:
       - host-net
     deploy:
