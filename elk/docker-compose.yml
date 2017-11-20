@@ -7,8 +7,8 @@ services:
       - "cluster.name=elk"
       - "bootstrap.memory_lock=false"
       - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
-      - "network.host=10.156.0.5"
-      - "discovery.zen.ping.unicast.hosts=10.156.0.5,10.156.0.3,10.156.0.4"
+      - "network.host=${ESDATA1_IP}"
+      - "discovery.zen.ping.unicast.hosts=${ESDATA1_IP},${ESDATA2_IP},${ESDATA3_IP}"
       - "LOGSPOUT=ignore"
     pid: "host"
     ulimits:
@@ -27,12 +27,13 @@ services:
         window: 120s
       resources:
         limits:
+          cpus: '0.50'
           memory: 3G
         reservations:
           memory: 512M
       placement:
         constraints:
-          - 'node.hostname==swarm-worker-1'
+          - 'node.hostname==${ESDATA1_HOST}'
 
   es2:
     image: stefanprodan/elasticsearch-oss:6.0.0
@@ -40,8 +41,8 @@ services:
       - "cluster.name=elk"
       - "bootstrap.memory_lock=false"
       - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
-      - "network.host=10.156.0.3"
-      - "discovery.zen.ping.unicast.hosts=10.156.0.5,10.156.0.3,10.156.0.4"
+      - "network.host=${ESDATA2_IP}"
+      - "discovery.zen.ping.unicast.hosts=${ESDATA1_IP},${ESDATA2_IP},${ESDATA3_IP}"
       - "LOGSPOUT=ignore"
     pid: "host"
     ulimits:
@@ -62,7 +63,7 @@ services:
           memory: 512M
       placement:
         constraints:
-          - 'node.hostname==swarm-worker-2'
+          - 'node.hostname==${ESDATA2_HOST}'
 
   es3:
     image: stefanprodan/elasticsearch-oss:6.0.0
@@ -70,8 +71,8 @@ services:
       - "cluster.name=elk"
       - "bootstrap.memory_lock=false"
       - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
-      - "network.host=10.156.0.4"
-      - "discovery.zen.ping.unicast.hosts=10.156.0.5,10.156.0.3,10.156.0.4"
+      - "network.host=${ESDATA3_IP}"
+      - "discovery.zen.ping.unicast.hosts=${ESDATA1_IP},${ESDATA2_IP},${ESDATA3_IP}"
       - "LOGSPOUT=ignore"
     pid: "host"
     ulimits:
@@ -92,7 +93,7 @@ services:
           memory: 512M
       placement:
         constraints:
-          - 'node.hostname==swarm-worker-3'
+          - 'node.hostname==${ESDATA3_HOST}'
 
   es-router:
     image: stefanprodan/elasticsearch-oss:6.0.0
@@ -103,8 +104,8 @@ services:
       - "node.ingest=false"
       - "bootstrap.memory_lock=false"
       - "ES_JAVA_OPTS=-Xms1G -Xmx1G"
-      - "network.host=10.156.0.2"
-      - "discovery.zen.ping.unicast.hosts=10.156.0.5,10.156.0.3,10.156.0.4"
+      - "network.host=${ESROUTER_IP}"
+      - "discovery.zen.ping.unicast.hosts=${ESDATA1_IP},${ESDATA2_IP},${ESDATA3_IP}"
       - "LOGSPOUT=ignore"
     pid: "host"
     ulimits:
@@ -125,12 +126,12 @@ services:
           memory: 512M
       placement:
         constraints:
-          - 'node.hostname==swarm-manager-1'
+          - 'node.hostname==${ESROUTER_HOST}'
 
   kibana:
     image: stefanprodan/kibana-oss:6.0.0
     environment:
-      - "ELASTICSEARCH_URL=http://10.156.0.2:9200"
+      - "ELASTICSEARCH_URL=http://${ESROUTER_IP}:9200"
       - "LOGSPOUT=ignore"
     networks:
       - net
@@ -148,7 +149,7 @@ services:
           memory: 128M
       placement:
         constraints:
-          - 'node.hostname==swarm-worker-3'
+          - 'node.hostname==${ESROUTER_HOST}'
 
   logstash:
     image: stefanprodan/logstash-oss:6.0.0
@@ -158,6 +159,9 @@ services:
       - source: logstash_pipeline
         target: /usr/share/logstash/pipeline/logstash.conf
     environment:
+      - "ESDATA1_IP=${ESDATA1_IP}"
+      - "ESDATA2_IP=${ESDATA2_IP}"
+      - "ESDATA3_IP=${ESDATA3_IP}"
       - "LOGSPOUT=ignore"
     networks:
       - host-net
@@ -206,7 +210,7 @@ services:
       - "PERIOD=daily"
       - "KEEP_DAYS=45"
       - "INDEX_PREFIX=logstash"
-    command: "--host 10.156.0.5 --port 9200"
+    command: "--host ${ESDATA1_IP} --port 9200"
     networks:
       - net
     deploy:
@@ -221,14 +225,14 @@ services:
           memory: 64M
       placement:
         constraints:
-          - 'node.hostname==swarm-worker-3'
+          - 'node.hostname==${ESROUTER_HOST}'
 
   exporter:
     image: braedon/prometheus-es-exporter:0.4.3
     configs:
       - source: exporter_config
         target: /usr/src/app/exporter.cfg
-    command: "-e 10.156.0.5"
+    command: "-e ${ESROUTER_IP}"
     networks:
       - net
     ports:
@@ -245,7 +249,7 @@ services:
           memory: 64M
       placement:
         constraints:
-          - 'node.hostname==swarm-manager-1'
+          - 'node.hostname==${ESROUTER_HOST}'
 
 networks:
   host-net:
