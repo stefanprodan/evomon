@@ -7,9 +7,13 @@ services:
       - "cluster.name=elk"
       - "bootstrap.memory_lock=false"
       - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
+      - "TAKE_FILE_OWNERSHIP=true"
       - "network.host=${ESDATA1_IP}"
+      - "node.name=${ESDATA1_HOST}"
       - "discovery.zen.ping.unicast.hosts=${ESDATA1_IP},${ESDATA2_IP},${ESDATA3_IP}"
       - "LOGSPOUT=ignore"
+    volumes:
+      - /usr/share/elasticsearch/data
     pid: "host"
     ulimits:
       memlock:
@@ -27,7 +31,7 @@ services:
         window: 120s
       resources:
         limits:
-          cpus: '0.50'
+          cpus: '0.20'
           memory: 3G
         reservations:
           memory: 512M
@@ -41,9 +45,13 @@ services:
       - "cluster.name=elk"
       - "bootstrap.memory_lock=false"
       - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
+      - "TAKE_FILE_OWNERSHIP=true"
+      - "node.name=${ESDATA2_HOST}"
       - "network.host=${ESDATA2_IP}"
       - "discovery.zen.ping.unicast.hosts=${ESDATA1_IP},${ESDATA2_IP},${ESDATA3_IP}"
       - "LOGSPOUT=ignore"
+    volumes:
+      - /usr/share/elasticsearch/data
     pid: "host"
     ulimits:
       memlock:
@@ -58,6 +66,7 @@ services:
         window: 120s
       resources:
         limits:
+          cpus: '0.20'
           memory: 3G
         reservations:
           memory: 512M
@@ -71,9 +80,13 @@ services:
       - "cluster.name=elk"
       - "bootstrap.memory_lock=false"
       - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
+      - "TAKE_FILE_OWNERSHIP=true"
+      - "node.name=${ESDATA3_HOST}"
       - "network.host=${ESDATA3_IP}"
       - "discovery.zen.ping.unicast.hosts=${ESDATA1_IP},${ESDATA2_IP},${ESDATA3_IP}"
       - "LOGSPOUT=ignore"
+    volumes:
+      - /usr/share/elasticsearch/data
     pid: "host"
     ulimits:
       memlock:
@@ -88,6 +101,7 @@ services:
         window: 120s
       resources:
         limits:
+          cpus: '0.20'
           memory: 3G
         reservations:
           memory: 512M
@@ -104,9 +118,13 @@ services:
       - "node.ingest=false"
       - "bootstrap.memory_lock=false"
       - "ES_JAVA_OPTS=-Xms1G -Xmx1G"
+      - "TAKE_FILE_OWNERSHIP=true"
+      - "node.name=${ESROUTER_HOST}"
       - "network.host=${ESROUTER_IP}"
       - "discovery.zen.ping.unicast.hosts=${ESDATA1_IP},${ESDATA2_IP},${ESDATA3_IP}"
       - "LOGSPOUT=ignore"
+    volumes:
+      - /usr/share/elasticsearch/data
     pid: "host"
     ulimits:
       memlock:
@@ -121,6 +139,7 @@ services:
         window: 120s
       resources:
         limits:
+          cpus: '0.20'
           memory: 2G
         reservations:
           memory: 512M
