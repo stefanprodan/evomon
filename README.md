@@ -32,3 +32,16 @@ chmod g+rwx /esdatadir
 chgrp 1000 /esdatadir
 ```
 
+### Overview
+
+![ELK](https://raw.githubusercontent.com/stefanprodan/swarm-monitoring/master/diagrams/elk-diagram.png)
+
+ELK Services:
+
+* Elastic Search Data (3 nodes)
+* Elastic Search Router
+* Elastic Search Exporter
+* Elastic Search Curator 
+* Kibana 
+* Logstash (global)
+* Logsprout (global)
