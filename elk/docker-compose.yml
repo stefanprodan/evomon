@@ -32,9 +32,9 @@ services:
       resources:
         limits:
           cpus: '0.20'
-          memory: 3G
+          memory: 4G
         reservations:
-          memory: 512M
+          memory: 2G
       placement:
         constraints:
           - 'node.hostname==${ESDATA1_HOST}'
@@ -67,9 +67,9 @@ services:
       resources:
         limits:
           cpus: '0.20'
-          memory: 3G
+          memory: 4G
         reservations:
-          memory: 512M
+          memory: 2G
       placement:
         constraints:
           - 'node.hostname==${ESDATA2_HOST}'
@@ -102,9 +102,9 @@ services:
       resources:
         limits:
           cpus: '0.20'
-          memory: 3G
+          memory: 4G
         reservations:
-          memory: 512M
+          memory: 2G
       placement:
         constraints:
           - 'node.hostname==${ESDATA3_HOST}'
@@ -117,7 +117,7 @@ services:
       - "node.data=false"
       - "node.ingest=false"
       - "bootstrap.memory_lock=false"
-      - "ES_JAVA_OPTS=-Xms1G -Xmx1G"
+      - "ES_JAVA_OPTS=-Xms512M -Xmx512M"
       - "TAKE_FILE_OWNERSHIP=true"
       - "node.name=${ESROUTER_HOST}"
       - "network.host=${ESROUTER_IP}"
@@ -140,7 +140,7 @@ services:
       resources:
         limits:
           cpus: '0.20'
-          memory: 2G
+          memory: 1G
         reservations:
           memory: 512M
       placement:
