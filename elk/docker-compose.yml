@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   es1:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.0.0
+    image: stefanprodan/elasticsearch-oss:6.0.0
     environment:
       - "cluster.name=elk"
       - "bootstrap.memory_lock=false"
@@ -35,7 +35,7 @@ services:
           - 'node.hostname==swarm-worker-1'
 
   es2:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.0.0
+    image: stefanprodan/elasticsearch-oss:6.0.0
     environment:
       - "cluster.name=elk"
       - "bootstrap.memory_lock=false"
@@ -65,7 +65,7 @@ services:
           - 'node.hostname==swarm-worker-2'
 
   es3:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.0.0
+    image: stefanprodan/elasticsearch-oss:6.0.0
     environment:
       - "cluster.name=elk"
       - "bootstrap.memory_lock=false"
@@ -95,7 +95,7 @@ services:
           - 'node.hostname==swarm-worker-3'
 
   es-router:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.0.0
+    image: stefanprodan/elasticsearch-oss:6.0.0
     environment:
       - "cluster.name=elk"
       - "node.master=false"
@@ -128,7 +128,7 @@ services:
           - 'node.hostname==swarm-manager-1'
 
   kibana:
-    image: docker.elastic.co/kibana/kibana-oss:6.0.0
+    image: stefanprodan/kibana-oss:6.0.0
     environment:
       - "ELASTICSEARCH_URL=http://10.156.0.2:9200"
       - "LOGSPOUT=ignore"
@@ -151,7 +151,7 @@ services:
           - 'node.hostname==swarm-worker-3'
 
   logstash:
-    image: docker.elastic.co/logstash/logstash-oss:6.0.0
+    image: stefanprodan/logstash-oss:6.0.0
     configs:
       - source: logstash_config
         target: /usr/share/logstash/config/logstash.yml
