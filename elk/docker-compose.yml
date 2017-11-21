@@ -1,12 +1,12 @@
 version: "3.3"
 
 services:
-  es1:
+  esdata1:
     image: stefanprodan/elasticsearch-oss:6.0.0
     environment:
       - "cluster.name=elk"
       - "bootstrap.memory_lock=false"
-      - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
+      - "ES_JAVA_OPTS=-Xms${ESDATA_RAM} -Xmx${ESDATA_RAM}"
       - "TAKE_FILE_OWNERSHIP=true"
       - "network.host=${ESDATA1_IP}"
       - "node.name=${ESDATA1_HOST}"
@@ -27,19 +27,19 @@ services:
       resources:
         limits:
           cpus: '0.30'
-          memory: 4G
+          memory: ${ESDATA_RAM_LIMIT}
         reservations:
           memory: 2G
       placement:
         constraints:
           - 'node.hostname==${ESDATA1_HOST}'
 
-  es2:
+  esdata2:
     image: stefanprodan/elasticsearch-oss:6.0.0
     environment:
       - "cluster.name=elk"
       - "bootstrap.memory_lock=false"
-      - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
+      - "ES_JAVA_OPTS=-Xms${ESDATA_RAM} -Xmx${ESDATA_RAM}"
       - "TAKE_FILE_OWNERSHIP=true"
       - "node.name=${ESDATA2_HOST}"
       - "network.host=${ESDATA2_IP}"
@@ -57,19 +57,19 @@ services:
       resources:
         limits:
           cpus: '0.30'
-          memory: 4G
+          memory: ${ESDATA_RAM_LIMIT}
         reservations:
           memory: 2G
       placement:
         constraints:
           - 'node.hostname==${ESDATA2_HOST}'
 
-  es3:
+  esdata3:
     image: stefanprodan/elasticsearch-oss:6.0.0
     environment:
       - "cluster.name=elk"
       - "bootstrap.memory_lock=false"
-      - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
+      - "ES_JAVA_OPTS=-Xms${ESDATA_RAM} -Xmx${ESDATA_RAM}"
       - "TAKE_FILE_OWNERSHIP=true"
       - "node.name=${ESDATA3_HOST}"
       - "network.host=${ESDATA3_IP}"
@@ -87,14 +87,14 @@ services:
       resources:
         limits:
           cpus: '0.30'
-          memory: 4G
+          memory: ${ESDATA_RAM_LIMIT}
         reservations:
           memory: 2G
       placement:
         constraints:
           - 'node.hostname==${ESDATA3_HOST}'
 
-  es-router:
+  esrouter:
     image: stefanprodan/elasticsearch-oss:6.0.0
     environment:
       - "cluster.name=elk"
@@ -102,7 +102,7 @@ services:
       - "node.data=false"
       - "node.ingest=false"
       - "bootstrap.memory_lock=false"
-      - "ES_JAVA_OPTS=-Xms512M -Xmx512M"
+      - "ES_JAVA_OPTS=-Xms${ESROUTER_RAM} -Xmx${ESROUTER_RAM}"
       - "TAKE_FILE_OWNERSHIP=true"
       - "node.name=${ESROUTER_HOST}"
       - "network.host=${ESROUTER_IP}"
@@ -120,7 +120,7 @@ services:
       resources:
         limits:
           cpus: '0.20'
-          memory: 1G
+          memory: ${ESROUTER_RAM_LIMIT}
         reservations:
           memory: 512M
       placement:
