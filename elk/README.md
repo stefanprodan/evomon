@@ -1,12 +1,22 @@
 ### Docker Swarm ELK v6
 
-Services:
+Stack up:
 
-* Elastic Search (3 nodes)
-* Logstash (global)
-* Logsprout (global)
-* Kibana 
-* Curator
+```bash
+ESDATA1_HOST=swarm-worker-1 \
+ESDATA1_IP=10.156.0.5 \
+ESDATA2_HOST=swarm-worker-2 \
+ESDATA2_IP=10.156.0.3 \
+ESDATA3_HOST=swarm-worker-3 \
+ESDATA3_IP=10.156.0.4 \
+ESROUTER_HOST=swarm-manager-1 \
+ESROUTER_IP=10.156.0.2 \
+ESDATA_RAM=2G \
+ESDATA_RAM_LIMIT=4G \
+ESROUTER_RAM=512M \
+ESROUTER_RAM_LIMIT=1G \
+docker stack deploy -c docker-compose.yml elk
+```
 
 ### Queries
 
