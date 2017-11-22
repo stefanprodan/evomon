@@ -12,6 +12,7 @@ CADVISOR_LIST=
 for NODE_HOST in $NODES_HOSTS
 do
    NODE_IP=$(docker node inspect ${NODE_HOST} --format '{{ .Status.Addr  }}')
+   echo "${NODE_HOST} - ${NODE_IP}"
    if [ -n "$NODEEXPORTER_LIST" ]; then
      NODEEXPORTER_LIST="${NODEEXPORTER_LIST},'${NODE_IP}:${NODEEXPORTER_PORT}'"
    else
