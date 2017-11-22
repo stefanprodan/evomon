@@ -17,3 +17,13 @@
     tls off
 }
 
+:13350 {
+    proxy / {$CLUSTER01}:5601 {
+            transparent
+            websocket
+        }
+
+    errors stderr
+    tls off
+}
+
