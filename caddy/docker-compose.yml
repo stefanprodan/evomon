@@ -24,4 +24,4 @@ networks:
 
 configs:
   caddy_config:
-    file: .Caddyfile
+    file: Caddyfile
