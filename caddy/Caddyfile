@@ -1,0 +1,19 @@
+:13390 {
+    proxy / {$CLUSTER01}:9090 {
+            transparent
+        }
+
+    errors stderr
+    tls off
+}
+
+:13330 {
+    proxy / {$CLUSTER01}:3000 {
+            transparent
+            websocket
+        }
+
+    errors stderr
+    tls off
+}
+
