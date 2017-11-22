@@ -1,0 +1,273 @@
+version: "3.3"
+
+services:
+  esdata1:
+    image: stefanprodan/elasticsearch-oss:6.0.0
+    environment:
+      - "cluster.name=elk"
+      - "bootstrap.memory_lock=false"
+      - "ES_JAVA_OPTS=-Xms${ESDATA_RAM} -Xmx${ESDATA_RAM}"
+      - "TAKE_FILE_OWNERSHIP=true"
+      - "network.host=${ESDATA1_IP}"
+      - "node.name=${ESDATA1_HOST}"
+      - "discovery.zen.ping.unicast.hosts=${ESDATA1_IP},${ESDATA2_IP},${ESDATA3_IP}"
+      - "LOGSPOUT=ignore"
+    volumes:
+      - ${ESDATA_PATH}/esdata1:/usr/share/elasticsearch/data
+    networks:
+      - host-net
+    expose:
+      - 9200
+      - 9300
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        window: 120s
+      resources:
+        limits:
+          cpus: '0.30'
+          memory: ${ESDATA_RAM_LIMIT}
+        reservations:
+          memory: 2G
+      placement:
+        constraints:
+          - 'engine.labels.hostname==${ESDATA1_HOST}'
+
+  esdata2:
+    image: stefanprodan/elasticsearch-oss:6.0.0
+    environment:
+      - "cluster.name=elk"
+      - "bootstrap.memory_lock=false"
+      - "ES_JAVA_OPTS=-Xms${ESDATA_RAM} -Xmx${ESDATA_RAM}"
+      - "TAKE_FILE_OWNERSHIP=true"
+      - "node.name=${ESDATA2_HOST}"
+      - "network.host=${ESDATA2_IP}"
+      - "discovery.zen.ping.unicast.hosts=${ESDATA1_IP},${ESDATA2_IP},${ESDATA3_IP}"
+      - "LOGSPOUT=ignore"
+    volumes:
+      - ${ESDATA_PATH}/esdata2:/usr/share/elasticsearch/data
+    networks:
+      - host-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        window: 120s
+      resources:
+        limits:
+          cpus: '0.30'
+          memory: ${ESDATA_RAM_LIMIT}
+        reservations:
+          memory: 2G
+      placement:
+        constraints:
+          - 'engine.labels.hostname==${ESDATA2_HOST}'
+
+  esdata3:
+    image: stefanprodan/elasticsearch-oss:6.0.0
+    environment:
+      - "cluster.name=elk"
+      - "bootstrap.memory_lock=false"
+      - "ES_JAVA_OPTS=-Xms${ESDATA_RAM} -Xmx${ESDATA_RAM}"
+      - "TAKE_FILE_OWNERSHIP=true"
+      - "node.name=${ESDATA3_HOST}"
+      - "network.host=${ESDATA3_IP}"
+      - "discovery.zen.ping.unicast.hosts=${ESDATA1_IP},${ESDATA2_IP},${ESDATA3_IP}"
+      - "LOGSPOUT=ignore"
+    volumes:
+      - ${ESDATA_PATH}/esdata3:/usr/share/elasticsearch/data
+    networks:
+      - host-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        window: 120s
+      resources:
+        limits:
+          cpus: '0.30'
+          memory: ${ESDATA_RAM_LIMIT}
+        reservations:
+          memory: 2G
+      placement:
+        constraints:
+          - 'engine.labels.hostname==${ESDATA3_HOST}'
+
+  esrouter:
+    image: stefanprodan/elasticsearch-oss:6.0.0
+    environment:
+      - "cluster.name=elk"
+      - "node.master=false"
+      - "node.data=false"
+      - "node.ingest=true"
+      - "bootstrap.memory_lock=false"
+      - "ES_JAVA_OPTS=-Xms${ESROUTER_RAM} -Xmx${ESROUTER_RAM}"
+      - "TAKE_FILE_OWNERSHIP=true"
+      - "node.name=${ESROUTER_HOST}"
+      - "network.host=${ESROUTER_IP}"
+      - "discovery.zen.ping.unicast.hosts=${ESDATA1_IP},${ESDATA2_IP},${ESDATA3_IP}"
+      - "LOGSPOUT=ignore"
+    volumes:
+      - /usr/share/elasticsearch/data
+    networks:
+      - host-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        window: 120s
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: ${ESROUTER_RAM_LIMIT}
+        reservations:
+          memory: 512M
+      placement:
+        constraints:
+          - 'engine.labels.hostname==${ESROUTER_HOST}'
+
+  kibana:
+    image: stefanprodan/kibana-oss:6.0.0
+    environment:
+      - "ELASTICSEARCH_URL=http://${ESROUTER_IP}:9200"
+      - "LOGSPOUT=ignore"
+    networks:
+      - net
+    ports:
+      - 5601:5601
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        window: 120s
+      resources:
+        limits:
+          memory: 1024M
+        reservations:
+          memory: 128M
+      placement:
+        constraints:
+          - 'engine.labels.hostname==${ESROUTER_HOST}'
+
+  logstash:
+    image: stefanprodan/logstash-oss:6.0.0
+    configs:
+      - source: logstash_config
+        target: /usr/share/logstash/config/logstash.yml
+      - source: logstash_pipeline
+        target: /usr/share/logstash/pipeline/logstash.conf
+    environment:
+      - "ESDATA1_IP=${ESDATA1_IP}"
+      - "ESDATA2_IP=${ESDATA2_IP}"
+      - "ESDATA3_IP=${ESDATA3_IP}"
+      - "LOGSPOUT=ignore"
+    networks:
+      - host-net
+    expose:
+      - 50005
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        window: 120s
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: 2G
+        reservations:
+          memory: 1G
+
+  logspout:
+    image: stefanprodan/swarm-logspout-logstash:3.2.3
+    environment:
+      - "ROUTE_URIS=logstash+tcp://localhost:50005"
+      - "LOGSPOUT=ignore"
+      - "HTTP_PORT=55444"
+      - "DOCKER_LABELS=on"
+      - "RETRY_STARTUP=on"
+    volumes:
+      - /etc/hostname:/etc/host_hostname:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - host-net
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        window: 120s
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: 1024M
+        reservations:
+          memory: 128M
+
+  curator:
+    image: stefanprodan/es-curator-cron:5.4.0
+    environment:
+      - "PERIOD=daily"
+      - "KEEP_DAYS=45"
+      - "INDEX_PREFIX=logstash"
+    command: "--host ${ESDATA1_IP} --port 9200"
+    networks:
+      - net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        window: 120s
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: 512M
+        reservations:
+          memory: 64M
+      placement:
+        constraints:
+          - 'engine.labels.hostname==${ESROUTER_HOST}'
+
+  exporter:
+    image: braedon/prometheus-es-exporter:0.4.3
+    environment:
+      - "LOGSPOUT=ignore"
+    configs:
+      - source: exporter_config
+        target: /usr/src/app/exporter.cfg
+    command: "-e ${ESROUTER_IP}"
+    networks:
+      - host-net
+    expose:
+      - 9206
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        window: 120s
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: 512M
+        reservations:
+          memory: 64M
+      placement:
+        constraints:
+          - 'engine.labels.hostname==${ESROUTER_HOST}'
+
+networks:
+  host-net:
+    external:
+      name: "host"
+  net:
+    driver: overlay
+    attachable: true
+
+configs:
+  logstash_config:
+    file: logstash.yml
+  logstash_pipeline:
+    file: logstash.pipeline
+  exporter_config:
+    file: exporter.cfg
