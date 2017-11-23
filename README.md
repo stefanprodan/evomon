@@ -45,3 +45,15 @@ ELK Services:
 * Kibana 
 * Logstash (global)
 * Logsprout (global)
+
+Deploy ELK:
+
+```bash
+./elk-evo-up.sh <SWARM-MANAGER-IP>
+```
+
+Deploy the reverse proxy on the jump host:
+
+```bash
+./caddy-up.sh
+```
