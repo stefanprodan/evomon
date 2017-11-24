@@ -5,6 +5,10 @@ cd elk
 
 export DOCKER_HOST=$1
 
+if docker stack ls | grep -q elk
+    then docker stack rm elk
+fi
+
 ESDATA1_HOST=cluster03 \
 ESDATA1_IP=172.16.200.118 \
 ESDATA2_HOST=cluster06 \
