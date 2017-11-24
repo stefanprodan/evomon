@@ -27,7 +27,7 @@ ALERT zkp_memory_usage
   }
 
 ALERT server_memory_usage
-  IF (((node_memory_MemTotal-node_memory_MemFree-node_memory_Cached)/(node_memory_MemTotal)*100)) > 75
+  IF (((node_memory_MemTotal-node_memory_MemFree-node_memory_Cached)/(node_memory_MemTotal)*100)) > 1
   FOR 2m
   LABELS { severity = "critical" }
   ANNOTATIONS {
@@ -45,7 +45,7 @@ ALERT server_load
   }
 
 ALERT server_cpu_usage
-  IF (100 - (avg by (instance) (irate(node_cpu{mode="idle"}[5m])) * 100)) > 75
+  IF (100 - (avg by (instance) (irate(node_cpu{mode="idle"}[5m])) * 100)) > 1
   FOR 2m
   LABELS { severity = "warning" }
   ANNOTATIONS {
@@ -54,7 +54,7 @@ ALERT server_cpu_usage
   }
 
 ALERT server_disk_usage
-  IF ((node_filesystem_size{mountpoint="/"} - node_filesystem_free{mountpoint="/"} ) / node_filesystem_size{mountpoint="/"} * 100) > 75
+  IF ((node_filesystem_size{mountpoint="/"} - node_filesystem_free{mountpoint="/"} ) / node_filesystem_size{mountpoint="/"} * 100) > 1
   FOR 2m
   LABELS { severity = "critical" }
   ANNOTATIONS {
