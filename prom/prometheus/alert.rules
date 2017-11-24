@@ -2,44 +2,53 @@
 ALERT exporter_down
   IF up == 0
   FOR 1m
-  LABELS { severity = "warning" }
+  LABELS { severity = "critical" }
   ANNOTATIONS {
     SUMMARY= "Exporter alert",
-    DESCRIPTION= "Exporter {{ $labels.instance }} has been down for more than 60 seconds.",
-  }
-
-ALERT kafka_down
-  IF absent(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=~"te-kafka.*"})
-  FOR 1m
-  LABELS { severity="critical" }
-  ANNOTATIONS {
-      SUMMARY= "Kafka stack alert",
-      DESCRIPTION= "{{ $labels.container_label_com_docker_swarm_service_name }} on {{ $labels.instance }} has been down for more than 60 seconds"
+    DESCRIPTION= "Exporter {{$labels.job}} on {{ $labels.instance }} has been down for more than 60 seconds.",
   }
 
 ALERT kafka_memory_usage
-  IF avg(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka.*"}) by (container_label_com_docker_swarm_service_name) > 1200000000
-  FOR 5m
+  IF avg(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka_kafka.*"}) by (container_label_com_docker_swarm_service_name, instance) > 16000000000
+  FOR 2m
   LABELS { severity = "warning" }
   ANNOTATIONS {
-      summary = "Kafka stack memory alert",
-      description = "{{ $labels.container_label_com_docker_swarm_service_name }} on {{ $labels.instance }} memory consumption is at {{ humanize $value}}.",
+      SUMMARY= "Kafka memory alert",
+      DESCRIPTION= "{{ $labels.container_label_com_docker_swarm_service_name }} on {{ $labels.instance }} memory consumption is at {{ humanize $value}}",
+  }
+
+ALERT zkp_memory_usage
+  IF avg(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka_zookeeper.*"}) by (container_label_com_docker_swarm_service_name, instance) > 4000000000
+  FOR 2m
+  LABELS { severity = "warning" }
+  ANNOTATIONS {
+      SUMMARY= "Zookeeper memory alert",
+      DESCRIPTION= "{{ $labels.container_label_com_docker_swarm_service_name }} on {{ $labels.instance }} memory consumption is at {{ humanize $value}}",
   }
 
 ALERT server_memory_usage
-  IF (node_memory_MemFree / node_memory_MemTotal) * 100 > 89
-  FOR 5m
+  IF (((node_memory_MemTotal-node_memory_MemFree-node_memory_Cached)/(node_memory_MemTotal)*100)) > 75
+  FOR 2m
   LABELS { severity = "critical" }
   ANNOTATIONS {
-      summary = "Server memory alert",
-      description = "{{ $labels.instance }} memory consumption is at $value %.",
+      SUMMARY= "Server memory alert",
+      DESCRIPTION= "{{ $labels.instance }} memory consumption is at {{ $value }}%",
   }
 
-ALERT cpu_memory_usage
-  IF 100 - (node_cpu{mode="idle"} * 100) > 50
-  FOR 5m
+ALERT server_cpu_usage
+  IF (100 - (avg by (instance) (irate(node_cpu{mode="idle"}[5m])) * 100)) > 75
+  FOR 2m
   LABELS { severity = "warning" }
   ANNOTATIONS {
-      summary = "Server CPU alert",
-      description = "{{ $labels.instance }} CPU consumption is at $value %.",
+    SUMMARY= "Server CPU alert",
+    DESCRIPTION= "{{ $labels.instance }} CPU consumption is at {{ $value }}%"
+  }
+
+ALERT server_disk_usage
+  IF ((node_filesystem_size{mountpoint="/"} - node_filesystem_free{mountpoint="/"} ) / node_filesystem_size{mountpoint="/"} * 100) > 75
+  FOR 2m
+  LABELS { severity = "critical" }
+  ANNOTATIONS {
+    SUMMARY = "Server disk alert",
+    DESCRIPTION = "{{ $labels.instance }} disk consumption is at {{ $value }}%"
   }
