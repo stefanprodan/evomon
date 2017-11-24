@@ -9,7 +9,7 @@ ALERT exporter_down
   }
 
 ALERT kafka_memory_usage
-  IF sum(avg_over_time(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka_kafka.*"}[1h])) by (container_label_com_docker_swarm_service_name, instance) > 16000000000
+  IF sum(max_over_time(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka_kafka.*"}[15m])) by (container_label_com_docker_swarm_service_name, instance) > 32000000000
   FOR 1m
   LABELS { severity = "warning" }
   ANNOTATIONS {
@@ -18,7 +18,7 @@ ALERT kafka_memory_usage
   }
 
 ALERT zkp_memory_usage
-  IF sum(avg_over_time(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka_zookeeper.*"}[1h])) by (container_label_com_docker_swarm_service_name, instance) > 4000000000
+  IF sum(max_over_time(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka_zookeeper.*"}[15m])) by (container_label_com_docker_swarm_service_name, instance) > 8000000000
   FOR 1m
   LABELS { severity = "warning" }
   ANNOTATIONS {
@@ -27,7 +27,7 @@ ALERT zkp_memory_usage
   }
 
 ALERT server_memory_usage
-  IF (((node_memory_MemTotal-node_memory_MemFree-node_memory_Cached)/(node_memory_MemTotal)*100)) > 1
+  IF (((node_memory_MemTotal-node_memory_MemFree-node_memory_Cached)/(node_memory_MemTotal)*100)) > 75
   FOR 1m
   LABELS { severity = "critical" }
   ANNOTATIONS {
@@ -45,7 +45,7 @@ ALERT server_load
   }
 
 ALERT server_cpu_usage
-  IF (100 - (avg by (instance) (irate(node_cpu{mode="idle"}[5m])) * 100)) > 1
+  IF (100 - (avg by (instance) (irate(node_cpu{mode="idle"}[5m])) * 100)) > 75
   FOR 1m
   LABELS { severity = "warning" }
   ANNOTATIONS {
@@ -54,7 +54,7 @@ ALERT server_cpu_usage
   }
 
 ALERT server_disk_usage
-  IF ((node_filesystem_size{fstype!="rootfs",mountpoint="/"} - node_filesystem_free{mountpoint="/"} ) / node_filesystem_size{mountpoint="/"} * 100) > 1
+  IF ((node_filesystem_size{fstype!="rootfs",mountpoint="/"} - node_filesystem_free{mountpoint="/"} ) / node_filesystem_size{mountpoint="/"} * 100) > 75
   FOR 1m
   LABELS { severity = "critical" }
   ANNOTATIONS {
