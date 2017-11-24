@@ -5,6 +5,11 @@ networks:
     external:
       name: "host"
 
+volumes:
+    prometheus: {}
+    grafana: {}
+    alertmanager: {}
+
 configs:
   prom_config:
     file: ./prometheus/prometheus.yml
