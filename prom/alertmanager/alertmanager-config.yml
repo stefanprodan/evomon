@@ -6,6 +6,6 @@ receivers:
       slack_configs:
           - send_resolved: true
             text: "{{ .CommonAnnotations.description }}"
-            username: alert
-            channel: alerts
-            api_url: https://hooks.slack.com/services/TOKEN
+            username: evo-prom
+            channel: devops-alerts
+            api_url: https://hooks.slack.com/services/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
