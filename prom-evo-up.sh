@@ -5,10 +5,8 @@ cd prom
 
 export DOCKER_HOST=$1
 
-if [ -n "$(docker stack ls | grep prom)" ]; then
-    echo ""
-else
-    docker stack rm prom
+if docker stack ls | grep -q prom
+    then docker stack rm prom
 fi
 
 PROM_HOST=cluster01 \
