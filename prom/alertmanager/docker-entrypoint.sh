@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+USER root
+
 cat /etc/alertmanager/alertmanager.yml |\
     sed "s@#api_url: <url>#@api_url: '$SLACK_URL'@g" |\
     sed "s@#channel: <channel>#@channel: '#$SLACK_CHANNEL'@g" |\

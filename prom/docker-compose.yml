@@ -30,7 +30,7 @@ services:
       - '-alertmanager.url=http://localhost:9093'
       - '--web.listen-address="0.0.0.0:9999"'
     volumes:
-      - ${PROM_PATH}:/prometheus
+      #- ${PROM_PATH}:/prometheus
     networks:
       - net
     deploy:
