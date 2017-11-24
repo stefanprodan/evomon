@@ -28,7 +28,7 @@ services:
       - '-storage.local.path=/prometheus'
       - '-storage.local.retention=48h'
       - '-alertmanager.url=http://localhost:9093'
-      - '--web.listen-address="0.0.0.0:9999"'
+      - '--web.listen-address=:9999'
     #volumes:
       #- ${PROM_PATH}:/prometheus
     networks:
