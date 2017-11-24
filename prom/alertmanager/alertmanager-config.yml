@@ -3,7 +3,7 @@ templates:
 
 route:
     receiver: 'slack'
-    group_by: ['alertname', 'cluster']
+    group_by: ['alertname', 'cluster', 'service', 'instance']
 
 receivers:
     - name: 'slack'
