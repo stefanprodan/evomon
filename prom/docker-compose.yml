@@ -73,8 +73,9 @@ services:
     expose:
       - 9094
     environment:
-      - "PORT=9094"
       - "ALERTMANAGER_URIS=default:http://localhost:9093"
+    command:
+      - '-port 9094'
     deploy:
       placement:
         constraints:
