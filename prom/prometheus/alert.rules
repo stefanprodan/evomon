@@ -35,6 +35,15 @@ ALERT server_memory_usage
       DESCRIPTION= "{{ $labels.instance }} memory consumption is at {{ $value }}%",
   }
 
+ALERT server_load
+  IF ((node_load5 / count without (cpu, mode) (node_cpu{mode="system"})) > 1)
+  FOR 2m
+  LABELS { severity = "warning" }
+  ANNOTATIONS {
+    SUMMARY= "Server load alert",
+    DESCRIPTION= "{{ $labels.instance }} load5 is at {{ $value }}"
+  }
+
 ALERT server_cpu_usage
   IF (100 - (avg by (instance) (irate(node_cpu{mode="idle"}[5m])) * 100)) > 75
   FOR 2m
