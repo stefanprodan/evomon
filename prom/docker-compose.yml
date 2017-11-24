@@ -41,11 +41,11 @@ services:
   alertmanager:
     image: prom/alertmanager:v0.9.1
     configs:
-      - source: alertmanager_entrypoint
-        target: /etc/alertmanager/docker-entrypoint.sh
-        mode: 0550
+#      - source: alertmanager_entrypoint
+#        target: /etc/alertmanager/docker-entrypoint.sh
+#        mode: 0550
       - source: alertmanager_config
-        target: /etc/alertmanager/alertmanager.yml
+        target: /etc/alertmanager/alertmanager-config.yml
     entrypoint:
       - '/etc/alertmanager/docker-entrypoint.sh'
     command:
