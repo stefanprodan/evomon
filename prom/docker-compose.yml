@@ -1,0 +1,76 @@
+version: "3.3"
+
+networks:
+  net:
+    external:
+      name: "host"
+
+configs:
+  prom_config:
+    file: ./prometheus/prometheus.yml
+  alert_rules:
+    file: ./prometheus/alert.rules
+  alertmanager_config:
+    file: ./alertmanager/alertmanager.yml
+  alertmanager_entrypoint:
+    file: ./alertmanager/docker-entrypoint.sh
+
+services:
+  prometheus:
+    image: prom/prometheus:v1.8.2
+    configs:
+      - source: prom_config
+        target: /etc/prometheus/prometheus.yml
+      - source: alert_rules
+        target: /etc/prometheus/alert.rules
+    command:
+      - '-config.file=/etc/prometheus/prometheus.yml'
+      - '-storage.local.path=/prometheus'
+      - '-storage.local.retention=48h'
+      - '-alertmanager.url=http://localhost:9093'
+      - '--web.listen-address="0.0.0.0:9999"'
+    volumes:
+      - prometheus:/prometheus
+    networks:
+      - net
+    deploy:
+      placement:
+        constraints:
+          - 'engine.labels.hostname==${PROM_HOST}'
+
+  alertmanager:
+    image: prom/alertmanager:v0.9.1
+    configs:
+      - source: alertmanager_entrypoint
+        target: /etc/alertmanager/docker-entrypoint.sh
+        mode: 0550
+      - source: alertmanager_config
+        target: /etc/alertmanager/alertmanager.yml
+    entrypoint:
+      - '/etc/alertmanager/docker-entrypoint.sh'
+    command:
+      - '-config.file=/etc/alertmanager/alertmanager.yml'
+      - '-storage.path=/alertmanager'
+    volumes:
+      - alertmanager:/alertmanager
+    networks:
+      - net
+    expose:
+      - 9093
+    deploy:
+      placement:
+        constraints:
+          - 'engine.labels.hostname==${PROM_HOST}'
+
+  unsee:
+    image: cloudflare/unsee:v0.8.0
+    networks:
+      - net
+    expose:
+      - 9094
+    environment:
+      - "ALERTMANAGER_URIS=default:http://localhost:9093"
+    deploy:
+      placement:
+        constraints:
+          - 'engine.labels.hostname==${PROM_HOST}'

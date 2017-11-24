@@ -1,0 +1,45 @@
+
+ALERT exporter_down
+  IF up == 0
+  FOR 1m
+  LABELS { severity = "warning" }
+  ANNOTATIONS {
+    SUMMARY= "Exporter alert",
+    DESCRIPTION= "Exporter {{ $labels.instance }} has been down for more than 60 seconds.",
+  }
+
+ALERT kafka_down
+  IF absent(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=~"te-kafka.*"})
+  FOR 1m
+  LABELS { severity="critical" }
+  ANNOTATIONS {
+      SUMMARY= "Kafka stack alert",
+      DESCRIPTION= "{{ $labels.container_label_com_docker_swarm_service_name }} on {{ $labels.instance }} has been down for more than 60 seconds"
+  }
+
+ALERT kafka_memory_usage
+  IF sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka.*"}}) > 1200000000
+  FOR 5m
+  LABELS { severity = "warning" }
+  ANNOTATIONS {
+      summary = "Kafka stack memory alert",
+      description = "{{ $labels.container_label_com_docker_swarm_service_name }} on {{ $labels.instance }} memory consumption is at {{ humanize $value}}.",
+  }
+
+ALERT server_memory_usage
+  IF (node_memory_MemFree / node_memory_MemTotal) * 100 > 89
+  FOR 5m
+  LABELS { severity = "critical" }
+  ANNOTATIONS {
+      summary = "Server memory alert",
+      description = "{{ $labels.instance }} memory consumption is at $value %.",
+  }
+
+ALERT cpu_memory_usage
+  IF 100 - (node_cpu{mode="idle"} * 100) > 50
+  FOR 5m
+  LABELS { severity = "warning" }
+  ANNOTATIONS {
+      summary = "Server CPU alert",
+      description = "{{ $labels.instance }} CPU consumption is at $value %.",
+  }

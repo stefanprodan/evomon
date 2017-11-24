@@ -27,3 +27,29 @@
     tls off
 }
 
+:13399 {
+    proxy / {$CLUSTER01}:9999 {
+            transparent
+        }
+
+    errors stderr
+    tls off
+}
+
+:13393 {
+    proxy / {$CLUSTER01}:9093 {
+            transparent
+        }
+
+    errors stderr
+    tls off
+}
+
+:13394 {
+    proxy / {$CLUSTER01}:9094 {
+            transparent
+        }
+
+    errors stderr
+    tls off
+}

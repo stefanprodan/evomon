@@ -1,0 +1,63 @@
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+
+  external_labels:
+    monitor: 'prom'
+
+rule_files:
+  - "alert.rules"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # nodes job
+  - job_name: 'nodes'
+    static_configs:
+      - targets: ['cluster01:9100','cluster02:9100','cluster03:9100','cluster04:9100','cluster05:9100','cluster06:9100']
+
+  # kafka-monitor job
+  - job_name: 'kafka_monitor'
+    static_configs:
+      - targets: ['cluster01:9802']
+
+  # burrow job
+  - job_name: 'burrow'
+    static_configs:
+      - targets: ['cluster01:9812']
+
+  # containers job
+  - job_name: 'containers'
+    static_configs:
+      - targets: ['cluster01:9701','cluster02:9701','cluster03:9701','cluster04:9701','cluster05:9701','cluster06:9701']
+
+  # kafka_brokers job
+  - job_name: 'kafka_brokers'
+    static_configs:
+      - targets: ['cluster04:7071','cluster05:7071','cluster06:7071']
+
+  # zookeepers job
+    static_configs:
+      - targets: ['cluster04:2301','cluster05:2301','cluster06:2301']
+
+  # triggerengines job
+  - job_name: 'triggerengines'
+    static_configs:
+      - targets: ['cluster02:9501','cluster02:9502','cluster03:9501','cluster03:9502']
+
+  # aggregates job
+  - job_name: 'aggregates'
+    static_configs:
+      - targets: ['cluster02:9601','cluster02:9602','cluster03:9601','cluster03:9602']
+
+  # onlinenotification job
+  - job_name: 'onlinenotification'
+    static_configs:
+      - targets: ['cluster02:9411','cluster03:9411']
+
+  # elasticsearch job
+  - job_name: 'elasticsearch'
+    static_configs:
+      - targets: ['cluster01:9108']
