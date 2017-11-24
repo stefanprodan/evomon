@@ -5,11 +5,6 @@ networks:
     external:
       name: "host"
 
-volumes:
-    prometheus: {}
-    grafana: {}
-    alertmanager: {}
-
 configs:
   prom_config:
     file: ./prometheus/prometheus.yml
@@ -35,7 +30,7 @@ services:
       - '-alertmanager.url=http://localhost:9093'
       - '--web.listen-address="0.0.0.0:9999"'
     volumes:
-      - prometheus:/prometheus
+      - ${PROM_PATH}:/prometheus
     networks:
       - net
     deploy:
@@ -61,7 +56,7 @@ services:
       - SLACK_CHANNEL=${SLACK_CHANNEL:-general}
       - SLACK_USER=${SLACK_USER:-alertmanager}
     volumes:
-      - alertmanager:/alertmanager
+      - ${PROM_PATH}:/alertmanager
     networks:
       - net
     expose:
