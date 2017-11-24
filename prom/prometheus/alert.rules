@@ -10,7 +10,7 @@ ALERT exporter_down
 
 ALERT kafka_memory_usage
   IF avg(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka_kafka.*"}) by (container_label_com_docker_swarm_service_name, instance) > 16000000000
-  FOR 2m
+  FOR 1m
   LABELS { severity = "warning" }
   ANNOTATIONS {
       summary = "Kafka memory alert",
@@ -19,7 +19,7 @@ ALERT kafka_memory_usage
 
 ALERT zkp_memory_usage
   IF avg(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka_zookeeper.*"}) by (container_label_com_docker_swarm_service_name, instance) > 4000000000
-  FOR 2m
+  FOR 1m
   LABELS { severity = "warning" }
   ANNOTATIONS {
       summary = "Zookeeper memory alert",
@@ -28,7 +28,7 @@ ALERT zkp_memory_usage
 
 ALERT server_memory_usage
   IF (((node_memory_MemTotal-node_memory_MemFree-node_memory_Cached)/(node_memory_MemTotal)*100)) > 1
-  FOR 2m
+  FOR 1m
   LABELS { severity = "critical" }
   ANNOTATIONS {
       summary = "Server memory alert",
@@ -37,7 +37,7 @@ ALERT server_memory_usage
 
 ALERT server_load
   IF ((node_load5 / count without (cpu, mode) (node_cpu{mode="system"})) > 1)
-  FOR 2m
+  FOR 1m
   LABELS { severity = "warning" }
   ANNOTATIONS {
     summary = "Server load alert",
@@ -46,7 +46,7 @@ ALERT server_load
 
 ALERT server_cpu_usage
   IF (100 - (avg by (instance) (irate(node_cpu{mode="idle"}[5m])) * 100)) > 1
-  FOR 2m
+  FOR 1m
   LABELS { severity = "warning" }
   ANNOTATIONS {
     summary = "Server CPU alert",
@@ -55,7 +55,7 @@ ALERT server_cpu_usage
 
 ALERT server_disk_usage
   IF ((node_filesystem_size{fstype!="rootfs",mountpoint="/"} - node_filesystem_free{mountpoint="/"} ) / node_filesystem_size{mountpoint="/"} * 100) > 1
-  FOR 2m
+  FOR 1m
   LABELS { severity = "critical" }
   ANNOTATIONS {
     summary = "Server disk alert",
