@@ -3,7 +3,9 @@ templates:
 
 route:
     receiver: 'slack'
-    group_by: ['alertname', 'cluster', 'service', 'instance']
+    group_by: ['alertname']
+    repeat_interval: 6h
+    group_wait: 1m
 
 receivers:
     - name: 'slack'
