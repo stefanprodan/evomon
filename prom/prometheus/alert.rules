@@ -54,7 +54,7 @@ ALERT server_cpu_usage
   }
 
 ALERT server_disk_usage
-  IF ((node_filesystem_size{mountpoint="/"} - node_filesystem_free{mountpoint="/"} ) / node_filesystem_size{mountpoint="/"} * 100) > 1
+  IF ((node_filesystem_size{fstype!="rootfs",mountpoint="/"} - node_filesystem_free{mountpoint="/"} ) / node_filesystem_size{mountpoint="/"} * 100) > 1
   FOR 2m
   LABELS { severity = "critical" }
   ANNOTATIONS {
