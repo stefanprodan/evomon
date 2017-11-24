@@ -56,6 +56,10 @@ services:
     command:
       - '-config.file=/etc/alertmanager/alertmanager.yml'
       - '-storage.path=/alertmanager'
+    environment:
+      - SLACK_URL=${SLACK_URL:-https://hooks.slack.com/services/TOKEN}
+      - SLACK_CHANNEL=${SLACK_CHANNEL:-general}
+      - SLACK_USER=${SLACK_USER:-alertmanager}
     volumes:
       - alertmanager:/alertmanager
     networks:

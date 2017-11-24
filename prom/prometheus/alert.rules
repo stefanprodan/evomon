@@ -18,7 +18,7 @@ ALERT kafka_down
   }
 
 ALERT kafka_memory_usage
-  IF sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka.*"}}) > 1200000000
+  IF sum(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka.*"}) > 1200000000
   FOR 5m
   LABELS { severity = "warning" }
   ANNOTATIONS {
