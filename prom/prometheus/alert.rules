@@ -9,7 +9,7 @@ ALERT exporter_down
   }
 
 ALERT kafka_memory_usage
-  IF avg(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka_kafka.*"}) by (container_label_com_docker_swarm_service_name, instance) > 16000000000
+  IF avg_over_time(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka_kafka.*"}[1h]) > 16000000000
   FOR 1m
   LABELS { severity = "warning" }
   ANNOTATIONS {
@@ -18,7 +18,7 @@ ALERT kafka_memory_usage
   }
 
 ALERT zkp_memory_usage
-  IF avg(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka_zookeeper.*"}) by (container_label_com_docker_swarm_service_name, instance) > 4000000000
+  IF avg_over_time(container_memory_usage_bytes{container_label_com_docker_swarm_service_name=~"te-kafka_zookeeper.*"}[1h]) > 4000000000
   FOR 1m
   LABELS { severity = "warning" }
   ANNOTATIONS {
