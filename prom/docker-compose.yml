@@ -11,7 +11,7 @@ configs:
   alert_rules:
     file: ./prometheus/alert.rules
   alertmanager_config:
-    file: ./alertmanager/alertmanager.yml
+    file: ./alertmanager/alertmanager-config.yml
   alertmanager_entrypoint:
     file: ./alertmanager/docker-entrypoint.sh
 
@@ -45,9 +45,9 @@ services:
 #        target: /etc/alertmanager/docker-entrypoint.sh
 #        mode: 0550
       - source: alertmanager_config
-        target: /etc/alertmanager/alertmanager-config.yml
-    entrypoint:
-      - '/etc/alertmanager/docker-entrypoint.sh'
+        target: /etc/alertmanager/alertmanager.yml
+#    entrypoint:
+#      - '/etc/alertmanager/docker-entrypoint.sh'
     command:
       - '-config.file=/etc/alertmanager/alertmanager.yml'
       - '-storage.path=/alertmanager'
