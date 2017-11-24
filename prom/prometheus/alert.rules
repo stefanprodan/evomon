@@ -4,8 +4,8 @@ ALERT exporter_down
   FOR 1m
   LABELS { severity = "critical" }
   ANNOTATIONS {
-    SUMMARY= "Exporter alert",
-    DESCRIPTION= "Exporter {{$labels.job}} on {{ $labels.instance }} has been down for more than 60 seconds.",
+    summary = "Exporter alert",
+    description = "Exporter {{$labels.job}} on {{ $labels.instance }} has been down for more than 60 seconds.",
   }
 
 ALERT kafka_memory_usage
@@ -13,8 +13,8 @@ ALERT kafka_memory_usage
   FOR 2m
   LABELS { severity = "warning" }
   ANNOTATIONS {
-      SUMMARY= "Kafka memory alert",
-      DESCRIPTION= "{{ $labels.container_label_com_docker_swarm_service_name }} on {{ $labels.instance }} memory consumption is at {{ humanize $value}}",
+      summary = "Kafka memory alert",
+      description = "{{ $labels.container_label_com_docker_swarm_service_name }} on {{ $labels.instance }} memory consumption is at {{ humanize $value}}",
   }
 
 ALERT zkp_memory_usage
@@ -22,8 +22,8 @@ ALERT zkp_memory_usage
   FOR 2m
   LABELS { severity = "warning" }
   ANNOTATIONS {
-      SUMMARY= "Zookeeper memory alert",
-      DESCRIPTION= "{{ $labels.container_label_com_docker_swarm_service_name }} on {{ $labels.instance }} memory consumption is at {{ humanize $value}}",
+      summary = "Zookeeper memory alert",
+      description = "{{ $labels.container_label_com_docker_swarm_service_name }} on {{ $labels.instance }} memory consumption is at {{ humanize $value}}",
   }
 
 ALERT server_memory_usage
@@ -31,8 +31,8 @@ ALERT server_memory_usage
   FOR 2m
   LABELS { severity = "critical" }
   ANNOTATIONS {
-      SUMMARY= "Server memory alert",
-      DESCRIPTION= "{{ $labels.instance }} memory consumption is at {{ $value }}%",
+      summary = "Server memory alert",
+      description = "{{ $labels.instance }} memory consumption is at {{ $value }}%",
   }
 
 ALERT server_load
@@ -40,8 +40,8 @@ ALERT server_load
   FOR 2m
   LABELS { severity = "warning" }
   ANNOTATIONS {
-    SUMMARY= "Server load alert",
-    DESCRIPTION= "{{ $labels.instance }} load5 is at {{ $value }}"
+    summary = "Server load alert",
+    description = "{{ $labels.instance }} load5 is at {{ $value }}"
   }
 
 ALERT server_cpu_usage
@@ -49,8 +49,8 @@ ALERT server_cpu_usage
   FOR 2m
   LABELS { severity = "warning" }
   ANNOTATIONS {
-    SUMMARY= "Server CPU alert",
-    DESCRIPTION= "{{ $labels.instance }} CPU consumption is at {{ $value }}%"
+    summary = "Server CPU alert",
+    description = "{{ $labels.instance }} CPU consumption is at {{ $value }}%"
   }
 
 ALERT server_disk_usage
@@ -58,6 +58,6 @@ ALERT server_disk_usage
   FOR 2m
   LABELS { severity = "critical" }
   ANNOTATIONS {
-    SUMMARY = "Server disk alert",
-    DESCRIPTION = "{{ $labels.instance }} disk consumption is at {{ $value }}%"
+    summary = "Server disk alert",
+    description = "{{ $labels.instance }} disk consumption is at {{ $value }}%"
   }

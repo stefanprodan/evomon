@@ -1,0 +1,3 @@
+{{ define "slack.devops.txt" }}
+    {{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}
+{{ end }}
